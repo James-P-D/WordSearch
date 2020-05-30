@@ -19,11 +19,15 @@ import com.ericsson.otp.erlang.OtpSelf;
 // https://github.com/nickmcdowall/Erlang-Examples/wiki/Using-Java-to-call-an-Erlang-function
 
 public class Main {
-	private final static int FRAME_WIDTH = 500;
+	private final static int FRAME_WIDTH = 400;
 	private final static int FRAME_HEIGHT = 500;
+	
+	private final static int GRID_WIDTH = 20;
+	private final static int GRID_HEIGHT = 20;	
+
 	private final static String DEFAULT_WORDS_TEXTFILE = "words.txt";
 	private final static String DEFAULT_COMPUTER_NAME = "DESKTOP-MF9T345";
-
+	
 	private static JTextArea wordFileTextArea;
 	private static JTextArea computerNameTextArea;
 	private static JButton connectButton;
@@ -60,6 +64,23 @@ public class Main {
         newContainer.setLayout(new GridBagLayout());
         //newContainer.add(middlePanel);
         
+        for(int x = 0; x < GRID_WIDTH; x++) {
+        	for(int y = 0; y < GRID_HEIGHT; y++) {
+                GridBagConstraints c = new GridBagConstraints();
+                JEditorPane textArea = new  JEditorPane("text/html", "");
+                if (((x + y) % 3) == 0) {
+                	textArea.setText("<FONT COLOR=\"RED\">X</FONT>");
+                } else {
+                	textArea.setText("<FONT COLOR=\"GRAY\">X</FONT>");
+                }
+                c.weightx = 1;
+                c.gridx = x;
+                c.gridy = y;
+                newContainer.add(textArea, c);
+        	}
+        }
+
+            	
         /////////////////////////////////////////////////////////////////////////////////////
         
         //Creating the panel at bottom and adding components
