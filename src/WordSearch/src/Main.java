@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-// https://github.com/nickmcdowall/Erlang-Examples/wiki/Using-Java-to-call-an-Erlang-function
 // All com.ericsson.otp.erlang.* imported from 'C:\Program Files\erl10.5\lib\jinterface-1.10.1\priv\OtpErlang.jar'
 // (Which seems to ship as standard with Erlang/Elixir)
 import com.ericsson.otp.erlang.OtpAuthException;
@@ -15,6 +14,9 @@ import com.ericsson.otp.erlang.OtpErlangExit;
 import com.ericsson.otp.erlang.OtpErlangObject;
 import com.ericsson.otp.erlang.OtpPeer;
 import com.ericsson.otp.erlang.OtpSelf;
+
+// All connection/disconnection/query Erlang from Java using OtpErlang is taken from here:
+// https://github.com/nickmcdowall/Erlang-Examples/wiki/Using-Java-to-call-an-Erlang-function
 
 public class Main {
 	private final static int FRAME_WIDTH = 500;
