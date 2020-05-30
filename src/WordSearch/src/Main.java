@@ -1,16 +1,13 @@
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-
-
-
-
+// https://github.com/nickmcdowall/Erlang-Examples/wiki/Using-Java-to-call-an-Erlang-function
+// All com.ericsson.otp.erlang.* imported from 'C:\Program Files\erl10.5\lib\jinterface-1.10.1\priv\OtpErlang.jar'
+// (Which seems to ship as standard with Erlang/Elixir)
 import com.ericsson.otp.erlang.OtpAuthException;
-//C:\Program Files\erl10.5\lib\jinterface-1.10.1\priv
 import com.ericsson.otp.erlang.OtpConnection;
 import com.ericsson.otp.erlang.OtpErlangAtom;
 import com.ericsson.otp.erlang.OtpErlangDecodeException;
@@ -20,8 +17,8 @@ import com.ericsson.otp.erlang.OtpPeer;
 import com.ericsson.otp.erlang.OtpSelf;
 
 public class Main {
-	private final static int FRAME_WIDTH = 300;
-	private final static int FRAME_HEIGHT = 300;
+	private final static int FRAME_WIDTH = 500;
+	private final static int FRAME_HEIGHT = 500;
 	private final static String DEFAULT_WORDS_TEXTFILE = "words.txt";
 	private final static String DEFAULT_COMPUTER_NAME = "DESKTOP-MF9T345";
 
@@ -29,6 +26,7 @@ public class Main {
 	private static JTextArea computerNameTextArea;
 	private static JButton connectButton;
 	private static JButton solveButton;
+	private static JButton disconnectButton;
 
 	private static OtpSelf client;
 	private static OtpPeer server;
@@ -45,8 +43,12 @@ public class Main {
         
         // Text Area at the top
         JPanel topPanel = new JPanel();
+        JLabel wordFileLabel = new JLabel("Wordlist file:");
+        topPanel.add(wordFileLabel);
         wordFileTextArea = new JTextArea(DEFAULT_WORDS_TEXTFILE);
         topPanel.add(wordFileTextArea);
+        JLabel computerNameLabel = new JLabel("Computer name:");
+        topPanel.add(computerNameLabel);
         computerNameTextArea = new JTextArea(DEFAULT_COMPUTER_NAME);
         topPanel.add(computerNameTextArea);
         
@@ -68,7 +70,11 @@ public class Main {
         solveButton = new JButton("Solve");
         solveButton.setEnabled(false);        
         bottomPanel.add(solveButton);
-        
+
+        disconnectButton = new JButton("Disconnect");
+        disconnectButton.setEnabled(false);        
+        bottomPanel.add(disconnectButton);
+
         connectButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -78,25 +84,43 @@ public class Main {
 					connection = client.connect(server);
 					connectButton.setEnabled(false);
 					solveButton.setEnabled(true);
+					disconnectButton.setEnabled(true);
 				} catch (IOException | OtpAuthException e) {
 					JOptionPane.showMessageDialog(null, "Unable to connect to Erlang\n" + e.getMessage());
 					System.out.println(e.getMessage());
 					System.out.println(e.getStackTrace());
 					return;
-				}
-				
-				try {
-					connection.sendRPC("translator", "translate", withArgs("friend", "Spanish"));
-					OtpErlangObject response = connection.receiveMsg().getMsg();
-					JOptionPane.showMessageDialog(null, response.toString());
-				} catch (IOException | OtpErlangDecodeException | OtpErlangExit | OtpAuthException e) {
-					// TODO Auto-generated catch block
-					JOptionPane.showMessageDialog(null, "Unable to query erlang!");
-					//e.printStackTrace();
 				}				
 			}
         });
 
+        solveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {					
+					connection.sendRPC("translator", "translate", withArgs("friend", "Spanish"));
+					OtpErlangObject response = connection.receiveMsg().getMsg();
+					JOptionPane.showMessageDialog(null, response.toString());
+					solveButton.setEnabled(false);
+				} catch (IOException | OtpErlangDecodeException | OtpErlangExit | OtpAuthException e) {
+					JOptionPane.showMessageDialog(null, "Unable to query Erlang\n" + e.getMessage());
+					System.out.println(e.getMessage());
+					System.out.println(e.getStackTrace());
+					return;
+				}
+			}
+        });
+
+        disconnectButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				connection.close();
+				connectButton.setEnabled(true);
+				solveButton.setEnabled(false);
+				disconnectButton.setEnabled(false);
+			}
+        });
+        
         /////////////////////////////////////////////////////////////////////////////////////
         
         frame.getContentPane().add(BorderLayout.NORTH, topPanel);
