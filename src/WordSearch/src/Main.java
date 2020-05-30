@@ -34,6 +34,8 @@ public class Main {
 	private static JButton solveButton;
 	private static JButton disconnectButton;
 
+	private static JEditorPane[][] cells = new JEditorPane[GRID_WIDTH][GRID_HEIGHT];
+	
 	private static OtpSelf client;
 	private static OtpPeer server;
 	private static OtpConnection connection;
@@ -67,11 +69,12 @@ public class Main {
         for(int x = 0; x < GRID_WIDTH; x++) {
         	for(int y = 0; y < GRID_HEIGHT; y++) {
                 GridBagConstraints c = new GridBagConstraints();
+                
                 JEditorPane textArea = new  JEditorPane("text/html", "");
                 if (((x + y) % 3) == 0) {
-                	textArea.setText("<FONT COLOR=\"RED\">X</FONT>");
+                	textArea.setText("<FONT COLOR=\"#000000\">X</FONT>");
                 } else {
-                	textArea.setText("<FONT COLOR=\"GRAY\">X</FONT>");
+                	textArea.setText("<FONT COLOR=\"#D7D7D7\">X</FONT>");
                 }
                 c.weightx = 1;
                 c.gridx = x;
@@ -79,7 +82,6 @@ public class Main {
                 newContainer.add(textArea, c);
         	}
         }
-
             	
         /////////////////////////////////////////////////////////////////////////////////////
         
