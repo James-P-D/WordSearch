@@ -1,8 +1,11 @@
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+
+import java.util.Random;
 
 // All com.ericsson.otp.erlang.* imported from 'C:\Program Files\erl10.5\lib\jinterface-1.10.1\priv\OtpErlang.jar'
 // (Which seems to ship as standard with Erlang/Elixir)
@@ -20,7 +23,7 @@ import com.ericsson.otp.erlang.OtpSelf;
 
 public class Main {
 	private final static int FRAME_WIDTH = 400;
-	private final static int FRAME_HEIGHT = 500;
+	private final static int FRAME_HEIGHT = 600;
 	
 	private final static int GRID_WIDTH = 20;
 	private final static int GRID_HEIGHT = 20;	
@@ -68,21 +71,39 @@ public class Main {
         
         for(int x = 0; x < GRID_WIDTH; x++) {
         	for(int y = 0; y < GRID_HEIGHT; y++) {
-                GridBagConstraints c = new GridBagConstraints();
-                
-                JEditorPane textArea = new  JEditorPane("text/html", "");
-                if (((x + y) % 3) == 0) {
-                	textArea.setText("<FONT COLOR=\"#000000\">X</FONT>");
-                } else {
-                	textArea.setText("<FONT COLOR=\"#D7D7D7\">X</FONT>");
-                }
-                c.weightx = 1;
-                c.gridx = x;
-                c.gridy = y;
-                newContainer.add(textArea, c);
+                GridBagConstraints contraints = new GridBagConstraints();
+                cells[x][y] = new JEditorPane("text/html", "");
+                cells[x][y].setText("_");
+               	//textArea.setText("<FONT COLOR=\"#000000\">X</FONT>");
+               	//textArea.setText("<FONT COLOR=\"#D7D7D7\">X</FONT>");
+                contraints.weightx = 1;
+                contraints.gridx = x;
+                contraints.gridy = y;
+                newContainer.add(cells[x][y], contraints);
         	}
         }
-            	
+
+        SetCells("____________________" +
+                 "________l___________" +
+                 "__strawberry_b______" +
+                 "___a____m_____apple_" +
+                 "___n____o______n____" +
+                 "___g__mango_____a___" +
+                 "___e_______r_____n__" +
+                 "___r______pear____a_" +
+                 "__lime____e__n______" +
+                 "___n______a___g_____" +
+                 "___e______c__cherry_" +
+                 "__________h______h__" +
+                 "____grape_____yuzu__" +
+                 "_______papaya____b__" +
+                 "________r________a__" +
+                 "_p_____k_i_______r__" +
+                 "_l_____i__c______b__" +
+                 "_u_____w___o________" +
+                 "_mandarin___t_______" +
+                 "____________________");
+                
         /////////////////////////////////////////////////////////////////////////////////////
         
         //Creating the panel at bottom and adding components
@@ -161,5 +182,27 @@ public class Main {
 				new OtpErlangAtom(language) 
 		};
 	}
-
+	
+	private static void SetCells(String str) {
+		Random rand = new Random(); 
+		String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		str = str.toUpperCase();
+		
+        if (str.length() != GRID_WIDTH * GRID_HEIGHT) {
+        	JOptionPane.showMessageDialog(null, "Incorrect board size!");
+        	return;
+        }
+        	
+        for (int x = 0; x < GRID_WIDTH; x++) {
+            for (int y = 0; y < GRID_HEIGHT; y++) {
+            	char ch = str.charAt((y * GRID_HEIGHT) + x);
+            	if (chars.contains(Character.toString(ch))) {
+            		cells[x][y].setText(Character.toString(ch));
+            	} else {            	
+            		char randChar = chars.charAt(rand.nextInt(26));
+            		cells[x][y].setText(Character.toString(randChar));
+            	}
+            }        	
+        }
+	}
 }
