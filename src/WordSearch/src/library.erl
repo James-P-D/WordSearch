@@ -12,20 +12,20 @@ match_start_string(_, _) -> false.
 
 get_tail([_|Tail]) -> Tail.
 
-sub_string(_, []) -> false;
-sub_string(Str1, Str2) ->
+sub_string(_, _, []) -> -1;
+sub_string(N, Str1, Str2) ->
     case (match_start_string(Str1, Str2)) of
-        true -> true;
-        false -> sub_string(Str1, get_tail(Str2))
+        true -> N;
+        false -> sub_string(N + 1, Str1, get_tail(Str2))
     end.
-
 
 display([]) -> [];
 display([Head|Tail]) -> io:fwrite("~c ", [Head]), display(Tail).
 display_nl(X) -> display(X), io:fwrite("~n").
 
-stuff(Word, Sentence) ->
-    case (sub_string(Word, Sentence)) of
-        true -> io:fwrite("Match!~n");
-        _ -> io:fwrite("Not a match!~n")
+stuff(Word, Sentence) ->    
+    N = sub_string(0, Word, Sentence),
+    case N of
+        -1 -> io:fwrite("Not a match!~n");
+        _ -> io:fwrite("N = ~B~n", [N]), io:fwrite("Match!~n")
     end.
