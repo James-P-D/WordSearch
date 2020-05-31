@@ -4,16 +4,16 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-
 import java.util.Random;
 
 // All com.ericsson.otp.erlang.* imported from 'C:\Program Files\erl10.5\lib\jinterface-1.10.1\priv\OtpErlang.jar'
 // (Which seems to ship as standard with Erlang/Elixir)
 import com.ericsson.otp.erlang.OtpAuthException;
 import com.ericsson.otp.erlang.OtpConnection;
-import com.ericsson.otp.erlang.OtpErlangAtom;
 import com.ericsson.otp.erlang.OtpErlangDecodeException;
 import com.ericsson.otp.erlang.OtpErlangExit;
+import com.ericsson.otp.erlang.OtpErlangList;
+import com.ericsson.otp.erlang.OtpErlangLong;
 import com.ericsson.otp.erlang.OtpErlangObject;
 import com.ericsson.otp.erlang.OtpPeer;
 import com.ericsson.otp.erlang.OtpSelf;
@@ -144,7 +144,12 @@ public class Main {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {					
-					connection.sendRPC("translator", "translate", withArgs("friend", "Spanish"));
+					int[] some_array = new int[3];
+					some_array[0] = 1;
+					some_array[0] = 2;
+					some_array[0] = 3;
+					//connection.sendRPC("translator", "translate", withArgs("friend", "Spanish"));
+					connection.sendRPC("translator", "list_length", GetArguments(some_array));
 					OtpErlangObject response = connection.receiveMsg().getMsg();
 					JOptionPane.showMessageDialog(null, response.toString());
 					solveButton.setEnabled(false);
@@ -176,10 +181,14 @@ public class Main {
         frame.setVisible(true);
 	}
 	
-	private static OtpErlangObject[] withArgs(String word, String language) {
+	private static OtpErlangObject[] GetArguments(int[] some_array) {
+		OtpErlangObject[] otpErlangObjects = new OtpErlangObject[some_array.length];
+		for (int i = 0; i < some_array.length; i++){
+			otpErlangObjects[i] = new OtpErlangLong(some_array[i]);
+		}
+		
 		return new OtpErlangObject[] { 
-				new OtpErlangAtom(word),
-				new OtpErlangAtom(language) 
+			new OtpErlangList(otpErlangObjects)
 		};
 	}
 	

@@ -1,5 +1,6 @@
 -module(translator).
 -export([translate/2]).
+-export([list_length/1]).
 
 translate(Word, Language) ->
 	case Language of
@@ -10,3 +11,5 @@ spanish(Word) ->
 	case Word of
 		'friend' -> 'amigo'
 	end.
+    
+list_length(L) -> length(L).    
