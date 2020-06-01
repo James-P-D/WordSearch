@@ -1,5 +1,4 @@
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -125,7 +124,7 @@ public class Main {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 try {
-                    client = new OtpSelf("client", "batman");
+                    client = new OtpSelf("client", "wordsearchcookie");
                     server = new OtpPeer("server@" + computerNameTextArea.getText());
                     connection = client.connect(server);
                     connectButton.setEnabled(false);
@@ -148,8 +147,7 @@ public class Main {
                     some_array[0] = 1;
                     some_array[0] = 2;
                     some_array[0] = 3;
-                    //connection.sendRPC("translator", "translate", withArgs("friend", "Spanish"));
-                    connection.sendRPC("translator", "list_length", GetArguments(some_array));
+                    connection.sendRPC("library", "list_length", GetArguments(some_array));
                     OtpErlangObject response = connection.receiveMsg().getMsg();
                     JOptionPane.showMessageDialog(null, response.toString());
                     solveButton.setEnabled(false);
@@ -197,7 +195,7 @@ public class Main {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         str = str.toUpperCase();
         
-        if (str.length() != GRID_WIDTH * GRID_HEIGHT) {
+        if (str.length() != (GRID_WIDTH * GRID_HEIGHT)) {
             JOptionPane.showMessageDialog(null, "Incorrect board size!");
             return;
         }

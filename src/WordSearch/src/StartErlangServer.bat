@@ -1,1 +1,1 @@
-erl -sname server -setcookie batman 
+erl -sname server -setcookie wordsearchcookie 
