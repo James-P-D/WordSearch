@@ -1,9 +1,15 @@
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
+
 
 // All com.ericsson.otp.erlang.* imported from 'C:\Program Files\erl10.5\lib\jinterface-1.10.1\priv\OtpErlang.jar'
 // (Which seems to ship as standard with Erlang/Elixir)
@@ -21,13 +27,13 @@ import com.ericsson.otp.erlang.OtpSelf;
 // https://github.com/nickmcdowall/Erlang-Examples/wiki/Using-Java-to-call-an-Erlang-function
 
 public class Main {
-    private final static int FRAME_WIDTH = 400;
+    private final static int FRAME_WIDTH = 500;
     private final static int FRAME_HEIGHT = 600;
     
     private final static int GRID_WIDTH = 20;
     private final static int GRID_HEIGHT = 20;    
 
-    private final static String DEFAULT_WORDS_TEXTFILE = "words.txt";
+    private final static String DEFAULT_WORDS_TEXTFILE = ".\\src\\words.txt";
     private final static String DEFAULT_COMPUTER_NAME = "DESKTOP-MF9T345";
     
     private static JTextArea wordFileTextArea;
@@ -41,6 +47,7 @@ public class Main {
     private static OtpSelf client;
     private static OtpPeer server;
     private static OtpConnection connection;
+    private static ArrayList<String> wordList = null;
     
     public static void main(String[] args) {
         JFrame frame = new JFrame("Java/Erlang WordSearch Solver");
@@ -141,15 +148,53 @@ public class Main {
 
         solveButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent arg0) {
+            public void actionPerformed(ActionEvent arg0) {    
+                if (wordList == null) {                    
+                    String filename = wordFileTextArea.getText();
+                    try {
+                        File file = new File(filename);
+                        FileReader fileReader = new FileReader(file);
+                        BufferedReader bufferedReader = new BufferedReader(fileReader);
+                        String line;
+                        wordList = new ArrayList<String>();
+                        while((line = bufferedReader.readLine()) != null)
+                        {
+                            wordList.add(line);
+                        }
+                        bufferedReader.close();
+                        fileReader.close();
+                    } catch (IOException e) {
+                        JOptionPane.showMessageDialog(null, "Unable to read from file: " + filename + "\n" + e.getMessage());
+                        System.out.println(e.getMessage());
+                        System.out.println(e.getStackTrace());
+                        return;
+                    }
+                }
+                
                 try {                    
-                    int[] some_array = new int[3];
-                    some_array[0] = 1;
-                    some_array[0] = 2;
-                    some_array[0] = 3;
-                    connection.sendRPC("library", "list_length", GetArguments(some_array));
-                    OtpErlangObject response = connection.receiveMsg().getMsg();
-                    JOptionPane.showMessageDialog(null, response.toString());
+                    String currentWord = wordList.get(0);
+                    wordList.remove(0);
+                    do {
+                        System.out.println("Searching for '" + currentWord + "'");
+                        int[] some_array = new int[3];
+                        some_array[0] = 1;
+                        some_array[0] = 2;
+                        some_array[0] = 3;
+                        connection.sendRPC("library", "list_length", GetArguments(some_array));
+                        OtpErlangObject response = connection.receiveMsg().getMsg();
+                        //JOptionPane.showMessageDialog(null, response.toString());
+                        System.out.println(response.toString());
+                        
+                        if(true) { // If word found
+                            // Update UI
+                            return;
+                        } else {
+                            //currentWord = wordList.get(0);
+                            //wordList.remove(0);
+                        }                        
+                    } while (wordList.size() != 0);
+                    
+                    JOptionPane.showMessageDialog(null, "No wore words!");
                     solveButton.setEnabled(false);
                 } catch (IOException | OtpErlangDecodeException | OtpErlangExit | OtpAuthException e) {
                     JOptionPane.showMessageDialog(null, "Unable to query Erlang\n" + e.getMessage());
