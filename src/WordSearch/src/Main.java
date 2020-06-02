@@ -187,6 +187,10 @@ public class Main {
                         
                         if(true) { // If word found
                             // Update UI
+                            if (wordList.size() == 0){
+                                JOptionPane.showMessageDialog(null, "No more words!");
+                                solveButton.setEnabled(false);
+                            }
                             return;
                         } else {
                             //currentWord = wordList.get(0);
@@ -194,7 +198,7 @@ public class Main {
                         }                        
                     } while (wordList.size() != 0);
                     
-                    JOptionPane.showMessageDialog(null, "No wore words!");
+                    JOptionPane.showMessageDialog(null, "No more words!");
                     solveButton.setEnabled(false);
                 } catch (IOException | OtpErlangDecodeException | OtpErlangExit | OtpAuthException e) {
                     JOptionPane.showMessageDialog(null, "Unable to query Erlang\n" + e.getMessage());
