@@ -1,5 +1,5 @@
 # WordSearch
-Wordsearch puzzle solver with [UI in Java Swing](https://github.com/James-P-D/WordSearch/blob/master/src/WordSearch/src/Main.java) and [searcher](https://github.com/James-P-D/WordSearch/blob/master/src/WordSearch/src/library.erl) in Erlang.
+Wordsearch puzzle solver with [UI](https://github.com/James-P-D/WordSearch/blob/master/src/WordSearch/src/Main.java) in Java using Swing and [searcher](https://github.com/James-P-D/WordSearch/blob/master/src/WordSearch/src/library.erl) in Erlang.
 
 ![Screenshot](https://github.com/James-P-D/WordSearch/blob/master/Screenshot.gif)
 
@@ -29,4 +29,4 @@ Finally, make a note of our machine name (in this case `DESKTOP-MF9T345`). We wi
 
 ### Java Client
 
-
+The Java application comes with a `20-by-20` wordsearch puzzle which contains the names of 20 items of fruit
