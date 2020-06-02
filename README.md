@@ -29,4 +29,4 @@ Finally, make a note of our machine name (in this case `DESKTOP-MF9T345`). We wi
 
 ### Java Client
 
-The Java application comes with a `20-by-20` wordsearch puzzle which contains the names of 20 items of fruit
+The Java application comes with a `20-by-20` wordsearch puzzle which contains the names of 20 items of fruit.
