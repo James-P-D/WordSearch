@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-
-
-
 // All com.ericsson.otp.erlang.* imported from 'C:\Program Files\erl10.5\lib\jinterface-1.10.1\priv\OtpErlang.jar'
 // (Which seems to ship as standard with Erlang/Elixir)
 import com.ericsson.otp.erlang.OtpAuthException;
@@ -83,10 +80,8 @@ public class Main {
         frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setMinimumSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
         frame.setMinimumSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
-
-        /////////////////////////////////////////////////////////////////////////////////////
         
-        // Text Area at the top
+        // Text Area at the top (wordslist and machine-name textboxes
         JPanel topPanel = new JPanel();
         JLabel wordFileLabel = new JLabel("Wordlist file:");
         topPanel.add(wordFileLabel);
@@ -97,8 +92,7 @@ public class Main {
         computerNameTextArea = new JTextArea(DEFAULT_COMPUTER_NAME);
         topPanel.add(computerNameTextArea);
         
-        /////////////////////////////////////////////////////////////////////////////////////
-        
+        // Main grid in centre of UI
         Container newContainer = new Container();
         newContainer.setLayout(new GridBagLayout());
         
@@ -113,13 +107,11 @@ public class Main {
                 newContainer.add(cells[x][y], contraints);
             }
         }
-
+        // Create the 2D array and update the cells in the UI
         grid = Get2DArray(DEFAULT_PUZZLE);
         SetCells(BLACK_COLOR);
-
-        /////////////////////////////////////////////////////////////////////////////////////
         
-        //Creating the panel at bottom and adding components
+        //Creating the panel at bottom containing our buttons
         JPanel bottomPanel = new JPanel();
         
         connectButton = new JButton("Connect");
@@ -134,6 +126,7 @@ public class Main {
         disconnectButton.setEnabled(false);        
         bottomPanel.add(disconnectButton);
 
+        // Click event for 'Connect' button
         connectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -153,10 +146,13 @@ public class Main {
             }
         });
 
+        // Click event for 'Solve' button
         solveButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent arg0) {    
+            public void actionPerformed(ActionEvent arg0) {
+                // If this is the first time clicking 'Solve', initialise the wordlist
                 if ((wordList == null) || (wordList.size() == 0)) {
+                    // Set all cells to gray initially
                     SetCells(GRAY_COLOR);                    
                     String filename = wordFileTextArea.getText();
                     try {
@@ -193,37 +189,54 @@ public class Main {
                         int col1 = ((OtpErlangLong)responseValues.elementAt(1)).intValue();
                         int row2 = ((OtpErlangLong)responseValues.elementAt(2)).intValue();
                         int col2 = ((OtpErlangLong)responseValues.elementAt(3)).intValue();
-                        
+                        System.out.println("Response (" + col1 + ", " + row1 + ", " + col2 + ", " + row2 + ")");
+                        // library:solve(L1, L2) returns a 4-part tuple specifying the start and
+                        // end (x, y) positions of the word if it was found. If it wan't found, then
+                        // all four elements are set to -1
                         if ((row1 != -1) && (col1 != -1) && (row2 != -1) && (col2 != -1)) {
                             if (row1 == row2) {
+                                // If rows are equal, then we have found a horizontal word                                
                                 for (int x = col1; x < col2; x++) {
                                     SetCell(x, row1, RED_COLOR, true);
                               }
                             } else if (col1 == col2){
+                                // If columns are equal, they we have found a vertical word
                                 for (int y = row1; y < row2; y++){
                                     SetCell(col1, y, RED_COLOR, true);
                                 }
                             } else {
+                                // In all other cases, we must have found a diagonal word
                                 int y = row1;
                                 for (int x = col1; x < col2; x++) {
                                     SetCell(x, y, RED_COLOR, true);
                                     y++;
                                 }                                
                             }
-                            if (wordList.size() == 0){
+                            if (wordList.size() == 0) {
+                                // If there are no more words left, disable the 'Solve' button
+                                // and tell the user
                                 JOptionPane.showMessageDialog(null, "No more words!");
                                 solveButton.setEnabled(false);
                             }
+                            // Nothing else to do but exit the loop
                             return;
                         } else {
+                            // If we weren't able to find the current word, get the next one
+                            // and repeat the loop
                             currentWord = wordList.get(0);
                             wordList.remove(0);
                         }                        
+                        // Stop looping if we run out of words
                     } while (wordList.size() != 0);
                     
                     JOptionPane.showMessageDialog(null, "No more words!");
                     solveButton.setEnabled(false);
-                } catch (IOException | OtpErlangDecodeException | OtpErlangExit | OtpAuthException e) {
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(null, "I/O Exception\n" + e.getMessage());
+                    System.out.println(e.getMessage());
+                    System.out.println(e.getStackTrace());
+                    return;
+                } catch(OtpErlangDecodeException | OtpErlangExit | OtpAuthException e) {
                     JOptionPane.showMessageDialog(null, "Unable to query Erlang\n" + e.getMessage());
                     System.out.println(e.getMessage());
                     System.out.println(e.getStackTrace());
@@ -236,6 +249,7 @@ public class Main {
             }
         });
 
+        // Click event for 'Disconnect' button
         disconnectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -246,39 +260,34 @@ public class Main {
             }
         });
         
-        /////////////////////////////////////////////////////////////////////////////////////
-        
+        // Add our UI elements
         frame.getContentPane().add(BorderLayout.NORTH, topPanel);
         frame.getContentPane().add(BorderLayout.CENTER, newContainer);
-        frame.getContentPane().add(BorderLayout.SOUTH, bottomPanel);
-        
+        frame.getContentPane().add(BorderLayout.SOUTH, bottomPanel);        
         frame.setVisible(true);
     }
     
     private static OtpErlangObject[] GetArguments(String word, int[][] some_2d_array) {
+        // Convert the word to uppercase
         word = word.toUpperCase();
         
+        // Convert the word to an ASCII array
         OtpErlangObject[] wordCharacters = new OtpErlangObject[word.length()];
         for (int i = 0; i < word.length(); i++){
             wordCharacters[i] = new OtpErlangLong((int)word.charAt(i));
-            System.out.print((int)word.charAt(i)+" ");
         }
         
-        System.out.println();
-        
-        System.out.println("Grid");
-        
+        // Convert the grid to a 2D-ASCII array
         OtpErlangObject[] gridRowCharacters = new OtpErlangObject[GRID_HEIGHT];        
         for (int i = 0; i < GRID_HEIGHT; i++){
             OtpErlangObject[] gridColumnCharacters = new OtpErlangObject[GRID_WIDTH];            
             for(int j = 0; j < GRID_WIDTH; j++){
                 gridColumnCharacters[j] = new OtpErlangLong(some_2d_array[j][i]);   
-                System.out.print(gridColumnCharacters[j]+" ");
             }
-            System.out.println();
             gridRowCharacters[i] = new OtpErlangList(gridColumnCharacters);
         }
         
+        // Return a list containing our two parameters to pass to the Erlang server 
         return new OtpErlangObject[] { 
             new OtpErlangList(wordCharacters),
             new OtpErlangList(gridRowCharacters)
