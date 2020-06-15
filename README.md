@@ -23,7 +23,7 @@ The Java application comes with a `20x20` wordsearch puzzle which contains the n
 
 At the top of the UI there is a textbox for entering the path to a word-list file. This should be a plain textfile which contains a list of words, some of which appear in our puzzle.
 
-Currently this points to [words.txt](https://github.com/James-P-D/WordSearch/blob/master/src/WordSearch/src/words.txt) which contains the names of 20 items of fruit that appear in our grid, and 20 names of vegetables which **don't** appear in the puzzle.
+Currently this points to [words.txt](https://github.com/James-P-D/WordSearch/blob/master/src/WordSearch/src/words.txt) which contains the names of 20 items of fruit that appear in our grid, and 20 names of vegetables which *don't*.
 
 At the top of the UI there is also a textbox for entering the name of the machine running our Erlang server. Obviously you will need to change this from `DESKTOP-MF9T345` to whatever appeared onscreen when you started the Erlang server.
 
